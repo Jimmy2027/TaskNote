@@ -17,7 +17,7 @@ class TaskNoteHandler:
 
     @classmethod
     def from_config(cls, config_file: Path):
-        toml_config = config_file.read_text()
+        toml_config = config_file.expanduser().read_text()
         toml_dict = tomllib.loads(toml_config)
         if "notes_dir" in toml_dict:
             toml_dict["notes_dir"] = Path(toml_dict["notes_dir"]).expanduser()
