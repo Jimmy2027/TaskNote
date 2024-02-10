@@ -16,8 +16,8 @@ $ pip install .
 
 The package is made available in [a portage overlay](https://github.com/Jimmy2027/overlay).
 
-```bash
-root@host # emerge tasknote
+```shell
+root@host $ emerge tasknote
 ```
 
 ## Setup
@@ -34,6 +34,11 @@ notes_dir = "~/.local/share/tasknotes"
 ## Usage
 
 ```bash
-$ tasknote {task_id}
+$ task add "this is a test"
+Created task 1.
+$ tasknote 1
+# Creates the tasknote and opens the default editor
+# Also adds a note emoji to the task description
+Modifying task 1 '🗒 this is a test'.
 
 ```
