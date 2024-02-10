@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import click
 
-from tasknote.utils import TaskNoteHandler
+from tasknote.tasknote_handler import TaskNoteHandler
 
 
 @click.command()

@@ -2,7 +2,6 @@
 
 """Manage Taskwarrior notes"""
 
-import argparse
 import subprocess
 import os
 from pathlib import Path
@@ -18,8 +17,7 @@ class TaskNoteHandler:
 
     @classmethod
     def from_config(cls, config_file: Path):
-        with config_file.open() as f:
-            toml_config = f.readline().strip()
+        toml_config = config_file.read_text()
         toml_dict = tomllib.loads(toml_config)
         if "notes_dir" in toml_dict:
             toml_dict["notes_dir"] = Path(toml_dict["notes_dir"]).expanduser()
@@ -33,7 +31,7 @@ class TaskNoteHandler:
         os.chdir(self.notes_dir.parent)
         subprocess.run([EDITOR, notes_file], check=True)
 
-    def create_note(self, task_id: int):
+    def create_note(self, task_id: int) -> Path:
         """
         Create a tasknote and modify the task description, signalising that it contains a tasknote.
         """
