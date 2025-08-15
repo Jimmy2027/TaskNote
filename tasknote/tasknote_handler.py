@@ -5,7 +5,10 @@
 import subprocess
 import os
 from pathlib import Path
-import tomllib
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 EDITOR = Path(os.environ["EDITOR"])
 
