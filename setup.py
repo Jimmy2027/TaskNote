@@ -8,7 +8,7 @@ with open("README.md") as readme_file:
     readme = readme_file.read()
 
 
-requirements = ["Click>=7.0", "tomli; python_version < '3.11'"]
+requirements = ["Click>=7.0", "rich", "tomli; python_version < '3.11'"]
 
 test_requirements = [
     "pytest>=3",

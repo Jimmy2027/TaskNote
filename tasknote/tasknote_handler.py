@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import shutil
 import click
+from rich.console import Console
+from rich.markdown import Markdown
 try:
     import tomllib
 except ImportError:
@@ -64,17 +66,19 @@ class TaskNoteHandler:
             toml_dict = tomllib.loads(toml_config)
         return cls(**toml_dict)
 
-    def write_note(self, task_id: int):
+    def handle_note(self, task_id: int, edit: bool):
         """Open `self.editor` to take notes about task with ID `task_id`."""
 
-        notes_file = self.create_note(task_id=task_id)
+        note_file = self.get_note_file_path(task_id)
+        if note_file.exists() and not edit:
+            self.print_note(note_file)
+        else:
+            self.create_note(task_id, note_file)
 
-        os.chdir(self.notes_dir.parent)
-        subprocess.run([self.editor, notes_file], check=True)
 
-    def create_note(self, task_id: int) -> Path:
+    def get_note_file_path(self, task_id: int) -> Path:
         """
-        Create a tasknote and modify the task description, signalising that it contains a tasknote.
+        Create the note file path from task_id
         """
         # check if task_id is a digit
         if str(task_id).isdigit():
@@ -87,9 +91,35 @@ class TaskNoteHandler:
         else:
             task_uuid = task_id
 
+        try:
+            tt = task_uuid = subprocess.run(
+                [self.task_command, "_get", f"{task_uuid}.uuid"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                check=True,
+                text=True,
+            ).stdout.strip()
+        except subprocess.CalledProcessError as e:
+            raise click.ClickException(f"Non-existant or invalid task id [{task_id}]")
+
+        assert tt == task_uuid, f"Did not get a correct task uuid: expected [{task_uuid}], got [{tt}]"
+
         notes_dir = self.notes_dir
         notes_dir.mkdir(parents=True, exist_ok=True)
-        notes_file = notes_dir / f"{task_uuid}.md"
+        note_file = notes_dir / f"{task_uuid}.md"
+        return note_file
+
+
+    def print_note(self, note_file):
+        markdown_text = note_file.open("r").read()
+        console = Console()
+        console.print(Markdown(markdown_text))
+
+
+    def create_note(self, task_id: int, note_file):
+        """
+        Create a tasknote and modify the task description, signalising that it contains a tasknote.
+        """
 
         task_description = subprocess.run(
             [self.task_command, "_get", str(task_id) + ".description"],
@@ -98,9 +128,9 @@ class TaskNoteHandler:
             text=True,
         ).stdout.strip()
 
-        if not notes_file.exists():
-            with notes_file.open("w") as f:
-                f.write(f"description: {task_description}\n\n")
+        if not note_file.exists():
+            with note_file.open("w") as f:
+                f.write(f"# description: {task_description}\n\n")
 
         # modify the task description adding self.note_mark to the beginning
         if not task_description.startswith(self.note_mark):
@@ -109,4 +139,5 @@ class TaskNoteHandler:
                 check=True,
             )
 
-        return notes_file
+        os.chdir(self.notes_dir.parent)
+        subprocess.run([self.editor, note_file], check=True)
