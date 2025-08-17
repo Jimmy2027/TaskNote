@@ -22,13 +22,15 @@ root@host $ emerge tasknote
 
 ## Setup
 
-Write a tasknote.toml file to `~/.config/tasknote.toml`, configuring the path to the tasknotes.
-
-Example:
+To change defaults, write a tasknote.toml file to `~/.config/tasknote.toml`, for instance by starting from `tasknote.toml.example` file.
 
 ```toml
 # ~/.config/tasknote.toml
 notes_dir = "~/.local/share/tasknotes"
+task_command = "task"
+editor = "vim"
+note_mark = "[N]"
+# note_mark = "🗒"  # unicode if your terminal supports it
 ```
 
 ## Usage
