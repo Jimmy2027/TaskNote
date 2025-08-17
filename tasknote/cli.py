@@ -9,14 +9,18 @@ from tasknote.tasknote_handler import TaskNoteHandler, TaskNoteError
 
 
 @click.command()
-@click.argument("task_id", type=int)
+@click.argument("task_id", type=int, required=False, default=None)
 @click.option("--edit", "-e", is_flag=True)
 @click.option("--config", "-c", default="~/.config/tasknote.toml")
-def main(task_id, edit, config):
+@click.option("--all", "-a", "all_", is_flag=True)
+def main(task_id, edit, config, all_):
     """Console script for tasknote."""
     try:
         tasknote_handler = TaskNoteHandler.from_config(config)
-        tasknote_handler.handle_note(task_id, edit)
+        if task_id is not None:
+            tasknote_handler.handle_note(task_id, edit)
+        else:
+            tasknote_handler.list_notes(all_)
     except TaskNoteError as e:
         click.secho(f"ERROR: {e}", fg="red")
 

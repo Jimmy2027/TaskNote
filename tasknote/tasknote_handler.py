@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import click
+import uuid
 from rich.console import Console
 from rich.markdown import Markdown
 try:
@@ -16,6 +17,13 @@ except ImportError:
 
 class TaskNoteError(Exception):
     pass
+
+def check_uuid(u):
+    try:
+        uuid.UUID(u)
+    except ValueError:
+        return False
+    return True
 
 def resolve_directory(p: str, var="") -> Path:
     if var:
@@ -141,3 +149,15 @@ class TaskNoteHandler:
 
         os.chdir(self.notes_dir.parent)
         subprocess.run([self.editor, note_file], check=True)
+
+    def list_notes(self, all_=False):
+        if not self.notes_dir.exists(): # no note taken yet
+            return
+        if not self.notes_dir.is_dir():
+            raise TaskNoteError(f"[{self.notes_dir} is not a directory")
+
+        task_list = [f.stem for f in self.notes_dir.iterdir() if check_uuid(f.stem)]
+        if task_list:
+            subprocess.run(
+                [self.task_command, "all" if all_ else "list", *task_list],
+                check=False) # task returns non-null exit status if no tasks
