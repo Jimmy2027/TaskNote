@@ -74,7 +74,7 @@ class TaskNoteHandler:
             toml_dict = tomllib.loads(toml_config)
         return cls(**toml_dict)
 
-    def handle_note(self, task_id: int, edit: bool):
+    def handle_note(self, task_id: str, edit: bool):
         """Open `self.editor` to take notes about task with ID `task_id`."""
 
         note_file = self.get_note_file_path(task_id)
@@ -84,34 +84,22 @@ class TaskNoteHandler:
             self.create_note(task_id, note_file)
 
 
-    def get_note_file_path(self, task_id: int) -> Path:
+    def get_note_file_path(self, task_id: str) -> Path:
         """
         Create the note file path from task_id
         """
-        # check if task_id is a digit
-        if str(task_id).isdigit():
+        try:
             task_uuid = subprocess.run(
                 [self.task_command, "_get", f"{task_id}.uuid"],
-                stdout=subprocess.PIPE,
-                check=True,
-                text=True,
-            ).stdout.strip()
-        else:
-            task_uuid = task_id
-
-        try:
-            tt = task_uuid = subprocess.run(
-                [self.task_command, "_get", f"{task_uuid}.uuid"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
                 check=True,
                 text=True,
             ).stdout.strip()
         except subprocess.CalledProcessError as e:
-            raise click.ClickException(f"Non-existant or invalid task id [{task_id}]")
-
-        assert tt == task_uuid, f"Did not get a correct task uuid: expected [{task_uuid}], got [{tt}]"
-
+            raise TaskNoteError(f"Invalid task id [{task_id}]")
+        if not task_uuid:
+            raise TaskNoteError(f"Non-existant task id [{task_id}]")
         notes_dir = self.notes_dir
         notes_dir.mkdir(parents=True, exist_ok=True)
         note_file = notes_dir / f"{task_uuid}.md"
@@ -124,7 +112,7 @@ class TaskNoteHandler:
         console.print(Markdown(markdown_text))
 
 
-    def create_note(self, task_id: int, note_file):
+    def create_note(self, task_id: str, note_file):
         """
         Create a tasknote and modify the task description, signalising that it contains a tasknote.
         """

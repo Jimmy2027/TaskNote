@@ -9,7 +9,7 @@ from tasknote.tasknote_handler import TaskNoteHandler, TaskNoteError
 
 
 @click.command()
-@click.argument("task_id", type=int, required=False, default=None)
+@click.argument("task_id", type=str, required=False, default=None)
 @click.option("--edit", "-e", is_flag=True)
 @click.option("--config", "-c", default="~/.config/tasknote.toml")
 @click.option("--all", "-a", "all_", is_flag=True)
