@@ -82,7 +82,7 @@ ID Age   Description               Urg
 2 tasks
 ```
 
-If `tasknote` is called again on the same task, since the note exist, it is diplayed, rendered as markdown.
+Calling `tasknote` again on the same task. Since the note exists, it is displayed, rendered as markdown.
 
 ```bash
 $ tasknote 1
@@ -107,7 +107,7 @@ To edit it again, use the ```--edit``` or ```-e``` flag.
 $ tasknote 1 -e
 ```
 
-Giving no arguments, `tasknote` will display the list of pending tasks with a note.
+Given no arguments, `tasknote` will display the list of pending tasks with a note.
 
 ```bash
 $ tasknote
