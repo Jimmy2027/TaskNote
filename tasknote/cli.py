@@ -15,8 +15,8 @@ from tasknote.tasknote_handler import TaskNoteHandler, TaskNoteError
 def main(task_id, edit, config):
     """Console script for tasknote."""
     try:
-        tasknote_hanlder = TaskNoteHandler.from_config(config)
-        tasknote_hanlder.handle_note(task_id, edit)
+        tasknote_handler = TaskNoteHandler.from_config(config)
+        tasknote_handler.handle_note(task_id, edit)
     except TaskNoteError as e:
         click.secho(f"ERROR: {e}", fg="red")
 
