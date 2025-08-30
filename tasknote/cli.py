@@ -10,10 +10,14 @@ from tasknote.tasknote_handler import TaskNoteHandler, TaskNoteError
 
 @click.command()
 @click.argument("task_id", type=str, required=False, default=None)
-@click.option("--edit", "-e", "behavior", flag_value="edit")
-@click.option("--view", "-v", "behavior", flag_value="view")
-@click.option("--config", "-c", default="~/.config/tasknote.toml")
-@click.option("--all", "-a", "all_", is_flag=True)
+@click.option("--edit", "-e", "behavior", flag_value="edit",
+              help="edit existing note")
+@click.option("--view", "-v", "behavior", flag_value="view",
+              help="view existing note")
+@click.option("--config", "-c", default="~/.config/tasknote.toml", show_default=True,
+              help="path to configuration file")
+@click.option("--all", "-a", "all_", is_flag=True,
+              help="also list tasks that are completed")
 def main(task_id, behavior, config, all_):
     """Console script for tasknote."""
     try:
