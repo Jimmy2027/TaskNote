@@ -2,4 +2,5 @@ notes_dir = "~/.local/share/tasknotes"
 task_command = "task"
 editor = ["vim","+"]
 note_mark = "[N]"
+default_behavior = "edit" # or "view"
 # note_mark = "🗒"  # unicode if your terminal supports it

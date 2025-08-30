@@ -52,17 +52,23 @@ def resolve_executable(p: str, var="") -> Path:
 
 
 class TaskNoteHandler:
-
+    DEFAULT_BEHAVIORS = ["edit", "view"]
     def __init__(self, notes_dir: str = "~/.local/share/tasknotes", 
                  task_command: str = "task",
                  note_mark: str = "[N]",
                  editor: list[str] = ["vim","+"],
+                 default_behavior: str = "edit",
                  ):
+
+        if default_behavior not in  self.DEFAULT_BEHAVIORS:
+            raise TaskNoteError(f"Unknown default behavior: {default_behavior}. Should be one of {self.DEFAULT_BEHAVIORS}")
+
         self.notes_dir = resolve_directory(notes_dir, "note_dir")
         self.task_command = resolve_executable(task_command, "task_command")
         self.editor = editor
         self.editor[0] = resolve_executable(editor[0], "editor")
         self.note_mark = note_mark
+        self.default_behavior = default_behavior
 
     @classmethod
     def from_config(cls, config_file: str):
@@ -77,11 +83,11 @@ class TaskNoteHandler:
                 toml_dict["editor"] = [toml_dict["editor"]]
         return cls(**toml_dict)
 
-    def handle_note(self, task_id: str, edit: bool):
+    def handle_note(self, task_id: str, behavior: str):
         """Open `self.editor` to take notes about task with ID `task_id`."""
 
         note_file = self.get_note_file_path(task_id)
-        if note_file.exists() and not edit:
+        if note_file.exists() and (behavior == "view" or (not behavior and self.default_behavior == "view")):
             self.print_note(note_file)
         else:
             self.create_note(task_id, note_file)
