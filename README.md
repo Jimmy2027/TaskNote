@@ -28,7 +28,8 @@ To change defaults, write a tasknote.toml file to `~/.config/tasknote.toml`, for
 # ~/.config/tasknote.toml
 notes_dir = "~/.local/share/tasknotes"
 task_command = "task"
-editor = "vim"
+editor = ["vim","+"]
+default_behavior = "edit" # or "view"
 note_mark = "[N]"
 # note_mark = "🗒"  # unicode if your terminal supports it
 ```
@@ -42,9 +43,11 @@ Usage: tasknote [OPTIONS] [TASK_ID]
   Console script for tasknote.
 
 Options:
-  -e, --edit
-  -c, --config TEXT
-  -a, --all
+  -e, --edit         edit existing note
+  -v, --view         view existing note
+  -c, --config TEXT  path to configuration file  [default:
+                     ~/.config/tasknote.toml]
+  -a, --all          also list tasks that are completed
   --help             Show this message and exit.
 ```
 
@@ -82,7 +85,36 @@ ID Age   Description               Urg
 2 tasks
 ```
 
-Calling `tasknote` again on the same task. Since the note exists, it is displayed, rendered as markdown.
+Now there are two cases:
+
+#### Default behavior is `edit` (default)
+
+Being in this case means there is no ```default_behavior``` in the configuration file or the entry is set to ```edit```.
+
+Calling ```tasknote``` again on the same task will edit it again.
+
+If you want to render it as markdown on the console, use the ```--view``` or ```-v``` option.
+
+```bash
+$ tasknote 1 -v
+```
+```
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                 description: this is my first task                   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+
+                             First section                              
+
+Hello, this is an example.                                              
+
+ • point 1                                                              
+ • point 2      
+```
+
+#### Default behavior is ```view```
+
+Being in this case means the ```default_behavior``` entry is set to ```view``` in the configuration file.
 
 ```bash
 $ tasknote 1
@@ -106,6 +138,8 @@ To edit it again, use the ```--edit``` or ```-e``` flag.
 ```bash
 $ tasknote 1 -e
 ```
+
+#### Other options
 
 Given no arguments, `tasknote` will display the list of pending tasks with a note.
 
