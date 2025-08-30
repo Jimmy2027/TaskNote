@@ -117,6 +117,7 @@ class TaskNoteHandler:
 
     def print_note(self, note_file):
         markdown_text = note_file.open("r").read()
+        markdown_text += "\n---" # add an horizontal line at the end of the text
         console = Console()
         console.print(Markdown(markdown_text))
 
