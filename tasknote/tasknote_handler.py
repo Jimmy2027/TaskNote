@@ -56,11 +56,12 @@ class TaskNoteHandler:
     def __init__(self, notes_dir: str = "~/.local/share/tasknotes", 
                  task_command: str = "task",
                  note_mark: str = "[N]",
-                 editor: str = "vim",
+                 editor: list[str] = ["vim","+"],
                  ):
         self.notes_dir = resolve_directory(notes_dir, "note_dir")
         self.task_command = resolve_executable(task_command, "task_command")
-        self.editor = resolve_executable(editor, "editor")
+        self.editor = editor
+        self.editor[0] = resolve_executable(editor[0], "editor")
         self.note_mark = note_mark
 
     @classmethod
@@ -72,6 +73,8 @@ class TaskNoteHandler:
             toml_dict = {}
         else:
             toml_dict = tomllib.loads(toml_config)
+            if isinstance(toml_dict.get("editor"),str):
+                toml_dict["editor"] = [toml_dict["editor"]]
         return cls(**toml_dict)
 
     def handle_note(self, task_id: str, edit: bool):
@@ -136,7 +139,7 @@ class TaskNoteHandler:
             )
 
         os.chdir(self.notes_dir.parent)
-        subprocess.run([self.editor, note_file], check=True)
+        subprocess.run(self.editor+[note_file], check=True)
 
     def list_notes(self, all_=False):
         if not self.notes_dir.exists(): # no note taken yet
