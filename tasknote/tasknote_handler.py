@@ -78,7 +78,10 @@ class TaskNoteHandler:
             click.secho(f"Warning: config file not found: {config_file}. Using defaults.", fg="yellow", err=True)
             toml_dict = {}
         else:
-            toml_dict = tomllib.loads(toml_config)
+            try:
+                toml_dict = tomllib.loads(toml_config)
+            except tomllib.TOMLDecodeError as e:
+                raise TaskNoteError(f"Configuration file: {e}")
             if isinstance(toml_dict.get("editor"),str):
                 toml_dict["editor"] = [toml_dict["editor"]]
         return cls(**toml_dict)
