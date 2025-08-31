@@ -161,7 +161,6 @@ To get the completed tasks too, use the ```--all``` or ```-a``` flag.
 
 ```bash
 $ tasknote -a
-True
 
 ID St UUID     Age   Done Description              
  - C  ee03aec6 50s   7s   [N] this is my first task
